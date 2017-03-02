@@ -22,10 +22,6 @@ def get_version(path):
 def get_requirements(fname):
   return open(fname).readlines()
 
-def find_packages_relative(base):
-  return [base] + [os.path.join(base, package)
-           for package in find_packages(base)]
-
 def build_setup(name, package_name, version_path, package_base,
                 package_data=None):
   if package_data is None:
@@ -60,7 +56,8 @@ def build_setup(name, package_name, version_path, package_base,
     keywords = ["rematch", "ida", "idapro", "bindiff", "binary diffing",
                 "reverse engineering"],
     url = "https://www.github.com/nirizr/rematch/",
-    packages=find_packages_relative(package_base),
+    packages=find_packages(package_base),
+    package_dir={'': package_base},
     package_data=package_data,
     extras_require=extras_require,
     install_requires=install_requires,
