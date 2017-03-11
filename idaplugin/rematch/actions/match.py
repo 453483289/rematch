@@ -17,6 +17,7 @@ class MatchAction(base.BoundFileAction):
 
   def __init__(self, *args, **kwargs):
     super(MatchAction, self).__init__(*args, **kwargs)
+    self._running = False
     self.functions = None
     self.results = None
     self.task_id = None
@@ -40,6 +41,9 @@ class MatchAction(base.BoundFileAction):
 
     self.timer = QtCore.QTimer()
 
+  def running(self):
+    return super(MatchAction, self).running() or self._running
+
   def clean(self):
     self.timer.stop()
     try:
@@ -61,6 +65,7 @@ class MatchAction(base.BoundFileAction):
     log('match_action').info("match action cancelled")
     self.clean()
     self.cancel_delayed()
+    self._running = False
 
   @staticmethod
   def calc_file_version_hash():
@@ -76,6 +81,7 @@ class MatchAction(base.BoundFileAction):
 
   def submit_handler(self, source, source_single, source_range, target,
                      target_project, target_file, methods):
+    self._running = True
     self.source = source
     self.source_single = source_single
     self.source_range = source_range
@@ -219,6 +225,7 @@ class MatchAction(base.BoundFileAction):
     self.pbar.show()
 
     self.results = MatchResultDialog(self.task_id)
+    self.results.finished.connect(self.close_dialog)
 
     log('match_action').info("Result download started")
     locals_url = "collab/tasks/{}/locals/".format(self.task_id)
