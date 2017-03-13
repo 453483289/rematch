@@ -223,3 +223,10 @@ def test_task_matches_empty(admin_client, admin_user):
   response = admin_client.get('/collab/tasks/{}/matches/'.format(task.id),
                               content_type="application/json")
   assert_response(response, status.HTTP_200_OK, [])
+
+
+def test_matchers(admin_client):
+  response = admin_client.get('/collab/matches/matchers/',
+                              content_type="application/json")
+  from collab.matches import match_list
+  assert_response(response, status.HTTP_200_OK, match_list)
